@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:integration="http://www.springframework.org/schema/integration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <bean id="jmsConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <property name="targetConnectionFactory">
+            <bean class="SolJmsUtility" factory-method="createConnectionFactory">
+                <property name="host" value="${solace.jms.host}"/>
+                <property name="username" value="${solace.jms.clientUsername}"/>
+                <property name="password" value="${solace.jms.clientPassword}"/>
+            </bean>
+        </property>
+        <property name="sessionCacheSize" value="10"/>
+        <property name="cacheConsumers" value="false"/>
+    </bean>
+
+    <bean id="requestQueue" class="com.solacesystems.jcsmp.impl.QueueImpl">
+        <constructor-arg value="${solace.jms.demoQueueName}"/>
+        <constructor-arg  value="${solace.jms.apiProperties.Solace_JMS_DynamicDurables}"/>
+    </bean>
+
+    <integration:poller id="poller" default="true" fixed-delay="1000"/>
+
+</beans>
